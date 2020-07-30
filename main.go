@@ -14,7 +14,7 @@ var globalMap
 var globalWG sync.WaitGroup
 // Use a node structure to save information
 type Node struct {
-	ID 	         int
+	id 	         int
 	myNum        int
 	highestNum   int
 	replyTracker map[int]Node*   
