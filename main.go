@@ -14,9 +14,9 @@ const NODENUM = 10
 type Node struct {
 	myNum        int
 	highestNum   int
-	replyTracker    
+	replyTracker map[int]Node*   
 	requestCS    bool
-	deffered     [NODENUM]int
+	deffered     map[int]Node*
 
 }
 
