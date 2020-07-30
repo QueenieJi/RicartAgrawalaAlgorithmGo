@@ -5,6 +5,7 @@ import (
 	"sort"
 	"sync"
 	"time"
+	"math"
 )
 
 // Global variables
@@ -24,18 +25,21 @@ type Node struct {
 type Message struct {
 	messageType  string
 	senderId     int
-	receiver     map[int]Node*
+	receiver     Node*
 	requestedNum int
 }
 // make a new node
 func newNode(id int) Node* {
-	n := Node{id, 0, nil, false, map[int]*Node{}, make(chan Message)}
+	n := Node{id, 0, 0, nil, false, map[int]*Node{}, make(chan Message)}
 	return &n
 }
 
 // send a message
 func (n Node*) sendMessage (msg Message) {
-	receiver := 
+	receiver := msg.receiver
+	fmt.Printf("[Node %d] Sending a <%s> message to Node %d at MemAddr %p \n", n.id,
+		msg.messageType, receiver.id, globalMap[receiver.id])
+	receiver.nodeChannel <- msg
 }
 
 // receive a message
@@ -54,7 +58,7 @@ func (n Node*) mainProcess () {
 			if i == n.id{
 				continue
 			}
-			msg := Message{"request", n.id, globalMap[i]}
+			msg := Message{"request", n.id, globalMap[i], n.myNum}
 			go n.sendMessage(msg)
 		}
 	}
@@ -62,9 +66,6 @@ func (n Node*) mainProcess () {
 
 // receive process
 func (n Node*) receiveProcess() {
-	for {
-
-	}
 }
 
 
