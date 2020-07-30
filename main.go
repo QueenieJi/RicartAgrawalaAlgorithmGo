@@ -37,8 +37,7 @@ var globalWG sync.WaitGroup
 // make a new node
 func newNode(id int) *Node {
 	n := Node{ id, 0, 0, make([]bool, NODENUM)}, false, []int{}, make(chan Message) }
-	receiver     *Node
-	requestedNum int
+	return &n
 }
 
 // send a message
@@ -77,12 +76,27 @@ func (n *Node) mainProcess () {
 				n.replyTracker[i] = true
 				continue
 			}
-			msg := Message{"request", n.id, globalMap[i], n.myNum}
+			msg := Message{"request", n.id, n.myNum}
 			go n.sendMessage(msg, i)
+			// busy wait for all checked
+			n.waitAllReplied()
+			// enter CS
+			fmt.Println("Node %d Enter critical section", n.id)
+			n.requestCS = false
+			reply := Message{"reply", n.id, 0}
+			for i := 0; i < len(defferedNode); i ++ {
+				go n.send(reply, defferedNode[i])
+			}
+			defferedNode = []int{}
 		}
 	}
 }
 
+func (n *Node) waitAllReplied(){
+	for i := 0; i > NODENUM; i++ {
+		if n.replyTracker[i] == false { i -= 1 }
+	}
+}
 // receive process
 func (n Node*) receiveProcess() {
 	
