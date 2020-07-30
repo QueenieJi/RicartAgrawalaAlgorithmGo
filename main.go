@@ -25,6 +25,7 @@ type Message struct {
 	messageType  string
 	senderId     int
 	receiver     map[int]Node*
+	requestedNum int
 }
 // make a new node
 func newNode(id int) Node* {
@@ -39,7 +40,7 @@ func (n Node*) sendMessage (msg Message) {
 
 // receive a message
 func (n Node*) receiveMessage(msg Message) {
-
+	n.highestNum = n.highestNum > msg.
 }
 
 // main process
@@ -60,7 +61,11 @@ func (n Node*) mainProcess () {
 }
 
 // receive process
-func (n Node*) receiveProcess() {}
+func (n Node*) receiveProcess() {
+	for {
+
+	}
+}
 
 
 // main process
