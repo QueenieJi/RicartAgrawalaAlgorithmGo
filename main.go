@@ -36,11 +36,10 @@ func newNode(id int) Node* {
 }
 
 // send a message
-func (n Node*) sendMessage (msg Message) {
-	receiver := msg.receiver
+func (n Node*) sendMessage (msg Message, receiver int) {
 	fmt.Printf("[Node %d] Sending a <%s> message to Node %d at MemAddr %p \n", n.id,
 		msg.messageType, receiver.id, globalMap[receiver.id])
-	receiver.nodeChannel <- msg
+	globalMap[receiver].nodeChannel <- msg
 }
 
 // receive a message
@@ -61,7 +60,7 @@ func (n Node*) mainProcess () {
 				continue
 			}
 			msg := Message{"request", n.id, globalMap[i], n.myNum}
-			go n.sendMessage(msg)
+			go n.sendMessage(msg, i)
 		}
 	}
 }
