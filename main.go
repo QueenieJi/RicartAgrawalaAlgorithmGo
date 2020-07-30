@@ -48,7 +48,8 @@ func (n *Node) sendMessage (msg Message, receiver int) {
 }
 
 // receive a message
-func (n *Node) receiveMessage(msg Message) {
+func (n *Node) receiveMessage() {
+	msg := <- n.nodeChannel
 	if Compare(msg.messageType, "reply") == 0 {
 		n.replyTracker[msg.senderId] = true
 		return
@@ -98,8 +99,10 @@ func (n *Node) waitAllReplied(){
 	}
 }
 // receive process
-func (n Node*) receiveProcess() {
-	
+func (n *Node) receiveProcess() {
+	for {
+		n.receiveMessage(msg)
+	}
 }
 
 
