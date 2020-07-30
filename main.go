@@ -6,6 +6,9 @@ import (
 	"sync"
 	"time"
 )
+/*
+ * based on Ben Ari's text book, implemented in Go
+ */
 
 // Global variables
 const NODENUM := 2
@@ -13,7 +16,7 @@ var globalMap
 var globalWG sync.WaitGroup
 // Use a node structure to save information
 type Node struct {
-	ID 	         int
+	id 	         int
 	myNum        int
 	highestNum   int
 	replyTracker map[int]Node*   
@@ -25,12 +28,12 @@ type Node struct {
 type Message struct {
 	messageType  string
 	senderId     int
-	receiver     map[int]Node*
 	requestedNum int
 }
+
 // make a new node
 func newNode(id int) Node* {
-	n := Node{id, 0, nil, false, map[int]*Node{}, make(chan Message)}
+	n := Node{ id, 0, nil, false, map[int]*Node{}, make(chan Message) }
 	return &n
 }
 
@@ -42,7 +45,10 @@ func (n Node*) sendMessage (msg Message) {
 // receive a message
 func (n Node*) receiveMessage(msg Message) {
 	n.highestNum = n.highestNum > msg.requestedNum ? n.highestNum: msg.requestedNum
-	if !n.requestCS || (msg.requestedNum < n.myNum || (msg.requestedNum == n.myNum && msg.senderId < n.ID))
+	if !n.requestCS || (msg.requestedNum < n.myNum || (msg.requestedNum == n.myNum && msg.senderId < n.id)) {
+		reply := Message{ "reply", n.id, 0 }
+		globalMap[msg.senderId].sendMessage(reply)
+	}
 }
 
 // main process
