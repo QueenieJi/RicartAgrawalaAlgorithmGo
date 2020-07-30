@@ -36,7 +36,7 @@ var globalWG sync.WaitGroup
 
 // make a new node
 func newNode(id int) *Node {
-	n := Node{ id, 0, 0, make([]bool, NODENUM)}, false, []int{}, make(chan Message) }
+	n := Node{ id, 0, 0, make([]bool, NODENUM), false, []int{}, make(chan Message) }
 	return &n
 }
 
@@ -67,8 +67,8 @@ func (n *Node) receiveMessage() {
 func (n *Node) mainProcess () {
 	for {
 		fmt.Println("Node %d enters non-critical section ", n.id)
-		n.requestCS := true
-		n.myNum := highestNum + 1
+		n.requestCS = true
+		n.myNum = highestNum + 1
 		// set all elements in the reply array to be false
 		// send messages to all other nodes
 		for i := 0; i < NODENUM; i++ {
