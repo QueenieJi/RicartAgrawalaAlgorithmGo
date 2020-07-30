@@ -5,6 +5,8 @@ import (
 	"sort"
 	"sync"
 	"time"
+	"math"
+	"strings"
 )
 /*
  * based on Ben Ari's text book, implemented in Go
@@ -19,9 +21,9 @@ type Node struct {
 	id 	         int
 	myNum        int
 	highestNum   int
-	replyTracker map[int]Node*   
+	replyTracker []bool
 	requestCS    bool
-	defferedNode map[int]Node*
+	defferedNode []int
 	nodeChannel  chan Message
 }
 
@@ -32,22 +34,30 @@ type Message struct {
 }
 
 // make a new node
-func newNode(id int) Node* {
-	n := Node{ id, 0, nil, false, map[int]*Node{}, make(chan Message) }
+func newNode(id int) *Node {
+	n := Node{ id, 0, 0, make([]bool, NODENUM)}, false, []int{}, make(chan Message) }
 	return &n
 }
 
 // send a message
-func (n Node*) sendMessage (msg Message) {
-	receiver := 
+func (n *Node) sendMessage (msg Message, receiver int) {
+	fmt.Printf("[Node %d] Sending a <%s> message to Node %d at MemAddr %p \n", n.id,
+		msg.messageType, receiver.id, globalMap[receiver.id])
+	globalMap[receiver].nodeChannel <- msg
 }
 
 // receive a message
-func (n Node*) receiveMessage(msg Message) {
+func (n *Node) receiveMessage(msg Message) {
+	if Compare(msg.messageType, "reply") == 0 {
+		n.replyTracker[msg.senderId] = true
+		return
+	}
 	n.highestNum = n.highestNum > msg.requestedNum ? n.highestNum: msg.requestedNum
 	if !n.requestCS || (msg.requestedNum < n.myNum || (msg.requestedNum == n.myNum && msg.senderId < n.id)) {
 		reply := Message{ "reply", n.id, 0 }
-		globalMap[msg.senderId].sendMessage(reply)
+		n.sendMessage(reply, msg.senderId)
+	} else {
+		append(n.defferedNode, msg.senderId)
 	}
 }
 
@@ -57,22 +67,23 @@ func (n Node*) mainProcess () {
 		fmt.Println("Node %d enters non-critical section ", n.id)
 		n.requestCS := true
 		n.myNum := highestNum + 1
+		// set all elements in the reply array to be false
 		// send messages to all other nodes
 		for i := 0; i < NODENUM; i++ {
+			n.replyTracker[i] = false
 			if i == n.id{
+				n.replyTracker[i] = true
 				continue
 			}
-			msg := Message{"request", n.id, globalMap[i]}
-			go n.sendMessage(msg)
+			msg := Message{"request", n.id, globalMap[i], n.myNum}
+			go n.sendMessage(msg, i)
 		}
 	}
 }
 
 // receive process
 func (n Node*) receiveProcess() {
-	for {
-
-	}
+	
 }
 
 
@@ -85,7 +96,7 @@ func main () {
 		new := newNode(i)
 		globalMap[i] = new
 	}
-	fmt.Printf("Successfully created \d nodes.\n", NODENUM)
+	fmt.Printf("Successfully created %d nodes.\n", NODENUM)
 
 	for i := 0; i < NODENUM; i++ {
 		go globalMap[i].mainProcess()
