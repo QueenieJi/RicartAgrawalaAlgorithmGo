@@ -13,6 +13,7 @@ var globalMap
 var globalWG sync.WaitGroup
 // Use a node structure to save information
 type Node struct {
+	ID 	         int
 	myNum        int
 	highestNum   int
 	replyTracker map[int]Node*   
@@ -40,7 +41,8 @@ func (n Node*) sendMessage (msg Message) {
 
 // receive a message
 func (n Node*) receiveMessage(msg Message) {
-	n.highestNum = n.highestNum > msg.
+	n.highestNum = n.highestNum > msg.requestedNum ? n.highestNum: msg.requestedNum
+	if !n.requestCS || (msg.requestedNum < n.myNum || (msg.requestedNum == n.myNum && msg.senderId < n.ID))
 }
 
 // main process
