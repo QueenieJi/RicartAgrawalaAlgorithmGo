@@ -12,10 +12,6 @@ import (
  * based on Ben Ari's text book, implemented in Go
  */
 
-// Global variables
-const NODENUM := 2
-var globalMap
-var globalWG sync.WaitGroup
 // Use a node structure to save information
 type Node struct {
 	id 	         int
@@ -33,10 +29,16 @@ type Message struct {
 	requestedNum int
 }
 
+// Global variables
+const NODENUM = 2
+var globalMap map[int]*Node
+var globalWG sync.WaitGroup
+
 // make a new node
 func newNode(id int) *Node {
 	n := Node{ id, 0, 0, make([]bool, NODENUM)}, false, []int{}, make(chan Message) }
-	return &n
+	receiver     *Node
+	requestedNum int
 }
 
 // send a message
@@ -62,7 +64,7 @@ func (n *Node) receiveMessage(msg Message) {
 }
 
 // main process
-func (n Node*) mainProcess () {
+func (n *Node) mainProcess () {
 	for {
 		fmt.Println("Node %d enters non-critical section ", n.id)
 		n.requestCS := true
