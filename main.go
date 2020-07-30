@@ -5,51 +5,53 @@ import (
 	"sort"
 	"sync"
 	"time"
-	"math"
 )
 
-// Global variables
-const NODENUM := 2
-var globalMap
-var globalWG sync.WaitGroup
 // Use a node structure to save information
 type Node struct {
 	id 	         int
 	myNum        int
 	highestNum   int
-	replyTracker map[int]Node*   
+	replyTracker map[int]*Node
 	requestCS    bool
-	defferedNode map[int]Node*
+	defferedNode map[int]*Node
 	nodeChannel  chan Message
 }
 
 type Message struct {
 	messageType  string
 	senderId     int
-	receiver     Node*
+	receiver     *Node
 	requestedNum int
 }
+
+
+// Global variables
+const NODENUM = 2
+var globalMap map[int]*Node
+var globalWG sync.WaitGroup
+
 // make a new node
-func newNode(id int) Node* {
+func newNode(id int) *Node {
 	n := Node{id, 0, 0, nil, false, map[int]*Node{}, make(chan Message)}
 	return &n
 }
 
 // send a message
-func (n Node*) sendMessage (msg Message, receiver int) {
+func (n *Node) sendMessage (msg Message, receiver int) {
 	fmt.Printf("[Node %d] Sending a <%s> message to Node %d at MemAddr %p \n", n.id,
 		msg.messageType, receiver.id, globalMap[receiver.id])
 	globalMap[receiver].nodeChannel <- msg
 }
 
 // receive a message
-func (n Node*) receiveMessage(msg Message) {
+func (n *Node) receiveMessage(msg Message) {
 	n.highestNum = n.highestNum > msg.requestedNum ? n.highestNum: msg.requestedNum
 	if !n.requestCS || (msg.requestedNum < n.myNum || (msg.requestedNum == n.myNum && msg.senderId < n.ID))
 }
 
 // main process
-func (n Node*) mainProcess () {
+func (n *Node) mainProcess () {
 	for {
 		fmt.Println("Node %d enters non-critical section ", n.id)
 		n.requestCS := true
@@ -66,7 +68,7 @@ func (n Node*) mainProcess () {
 }
 
 // receive process
-func (n Node*) receiveProcess() {
+func (n *Node) receiveProcess() {
 }
 
 
