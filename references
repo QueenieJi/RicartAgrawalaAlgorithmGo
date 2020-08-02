@@ -1,5 +1,18 @@
 https://goinbigdata.com/golang-wait-for-all-goroutines-to-finish/
 https://gobyexample.com/maps
 https://www.golang-book.com/
-Ben-Ari M. - Principles of concurrent and distributed programming_ algorithms and models (2006, Addison Wesley_Pearson Education Limited)
+
+
+
 https://www.tutorialspoint.com/go/go_scope_rules.htm#:~:text=Global%20variables%20are%20defined%20outside,functions%20defined%20for%20the%20program.
+
+1. Glenn Ricart and Ashok K. Agrawala. 1981. An optimal algorithm for mutual exclusion in computer networks. Commun. ACM 24, 1 (Jan. 1981), 9–17. DOI:https://doi.org/10.1145/358527.358537
+2. Ben-Ari, M., & Ben-Arî, M. (2006). Principles of concurrent and distributed programming. Pearson Education.
+3. C. A. R. Hoare. 1978. Communicating sequential processes. Commun. ACM 21, 8 (Aug. 1978), 666–677. DOI:https://doi.org/10.1145/359576.359585
+4. Togashi, N., & Klyuev, V. (2014, April). Concurrency in Go and Java: performance analysis. In 2014 4th IEEE International Conference on Information Science and Technology (pp. 213-216). IEEE.
+5. https://www.geeksforgeeks.org/golang-goroutine-vs-thread/
+6. Conway, M. E. (1963). Design of a separable transition-diagram compiler. Communications of the ACM, 6(7), 396-408.
+7. http://www.golangpatterns.info/concurrency/coroutines
+8. https://github.com/golang/go/wiki/LearnConcurrency
+9. https://golang.org/doc/faq#goroutines
+10. https://www.geeksforgeeks.org/select-statement-in-go-language/

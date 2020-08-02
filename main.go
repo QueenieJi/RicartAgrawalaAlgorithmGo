@@ -30,13 +30,13 @@ type Message struct {
 }
 
 // Global variables
-const NODENUM = 8
+const NODENUM = 5
 
 var globalWG sync.WaitGroup
 
 // make a new node
 func newNode(id int) *Node {
-	n := Node{id, 0, 0, make([]bool, NODENUM), false, []int{}, make(chan Message), nil}
+	n := Node{id, 0, 0, make([]bool, NODENUM), false, []int{}, make(chan Message, 20), nil}
 	return &n
 }
 
@@ -61,7 +61,6 @@ func (n *Node) receiveMessage() {
 	if n.highestNum < msg.requestedNum {
 		n.highestNum = msg.requestedNum
 	}
-	// if you put print here，就没有deadlock了
 	if !n.requestCS || (msg.requestedNum < n.myNum || (msg.requestedNum == n.myNum && msg.senderId < n.id)) {
 		reply := Message{"reply", n.id, 0}
 		n.sendMessage(reply, msg.senderId)
@@ -109,6 +108,7 @@ func (n *Node) mainProcess() {
 func (n *Node) waitAllReplied() {
 	for i := 0; i < NODENUM; i++ {
 		if n.replyTracker[i] == false {
+			time.Sleep(1000 * time.Millisecond)
 			i -= 1
 		}
 	}
@@ -124,7 +124,7 @@ func (n *Node) receiveProcess() {
 // main process
 func main() {
 	globalNodesMap := map[int]*Node{}
-	globalWG.Add(NODENUM)
+	
 	fmt.Printf("Create Node now ...\n")
 	for i := 0; i < NODENUM; i++ {
 		globalNodesMap[i] = newNode(i)
@@ -133,6 +133,7 @@ func main() {
 	fmt.Printf("Successfully created %d nodes.\n", NODENUM)
 
 	for i := 0; i < NODENUM; i++ {
+		globalWG.Add(1)
 		go globalNodesMap[i].receiveProcess()
 		fmt.Printf("Create receive process for node %d\n", i)
 	}
@@ -141,5 +142,4 @@ func main() {
 		fmt.Printf("Create main process for node %d\n", i)
 	}
 	globalWG.Wait()
-	fmt.Println("All Nodes have entered entered and exited the Critical Section\nEnding programme now.\n")
 }
